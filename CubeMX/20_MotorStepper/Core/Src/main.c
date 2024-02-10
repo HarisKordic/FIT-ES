@@ -23,9 +23,10 @@
 #include "gpio.h"
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "stdio.h"		//引入标准输入输出头文件
+#include "stdio.h"		
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -45,16 +46,16 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-char rd = 'C';		//C表示顺时�?，A表示逆时�?
-uint16_t arr = 49;		//定时器重载值
-int StepNo = 1;		//步序编号，1-AB  2-BC  3-CD  4-DA
+char rd = 'C';		
+uint16_t arr = 49;		
+int StepNo = 1;		
 uint8_t rf = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-void StepOut(uint8_t StepNo);		//定义相序设置函数
+void StepOut(uint8_t StepNo);	
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -69,7 +70,7 @@ void StepOut(uint8_t StepNo);		//定义相序设置函数
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-	char str[4];		//串口输出值�?放数组
+	char str[4];		
 	char inputBuffer[20];  // Assuming NFC tag input won't exceed 20 characters
   int bufferIndex = 0;
   /* USER CODE END 1 */
@@ -95,7 +96,7 @@ int main(void)
   MX_TIM3_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-	__HAL_TIM_SET_AUTORELOAD(&htim3, arr);		//定时器3自动重载设定值
+	__HAL_TIM_SET_AUTORELOAD(&htim3, arr);		
   /* USER CODE END 2 */
 
 	char logMessage[] = "APPLICATION STARTED!\r";
@@ -104,7 +105,7 @@ int main(void)
   /* Infinite loop */
  while (1)
 {
-	 // Valid NFC tag, activate the motor for 3 seconds
+	 // Valid NFC tag
     
     char receivedChar;
     
@@ -120,7 +121,7 @@ int main(void)
         // Check if the scanned NFC tag is valid
         if (strcmp(inputBuffer, VALID_NFC_TAG_ID) == 0)
         {
-            // Valid NFC tag, activate the motor for 3 seconds
+            // Valid NFC tag
             char logMessage[] = "APPLICATION LOG ---> USER IS ATHORIZED\r";
             HAL_UART_Transmit(&huart1, (uint8_t *)logMessage, sizeof(logMessage) - 1, HAL_MAX_DELAY);
         }
@@ -128,6 +129,10 @@ int main(void)
         {
             char logMessage[] = "APPLICATION LOG ---> INVALID NFC TAG\r";
             HAL_UART_Transmit(&huart1, (uint8_t *)logMessage, sizeof(logMessage) - 1, HAL_MAX_DELAY);
+						char logMessageExit[] = "APPLICATION LOG ---> EXITING...\r";
+            HAL_UART_Transmit(&huart1, (uint8_t *)logMessageExit, sizeof(logMessageExit) - 1, HAL_MAX_DELAY);
+						exit(EXIT_FAILURE);
+
         }
 
         // Clear the input buffer and reset the buffer index for the next iteration
@@ -183,43 +188,43 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-//步序设置函数
+
 void StepOut(uint8_t StepNo)
 {
-	if(StepNo==1)		//步序1-AB
+	if(StepNo==1)		
 	{
 		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8|GPIO_PIN_9, GPIO_PIN_RESET);
 		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6|GPIO_PIN_7, GPIO_PIN_SET);
 	}
-	else if(StepNo==2)		//步序2-BC
+	else if(StepNo==2)		
 	{
 		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6|GPIO_PIN_9, GPIO_PIN_RESET);
 		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7|GPIO_PIN_8, GPIO_PIN_SET);
 	}
-	else if(StepNo==3)		//步序3-CD
+	else if(StepNo==3)		
 	{
 		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6|GPIO_PIN_7, GPIO_PIN_RESET);
 		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8|GPIO_PIN_9, GPIO_PIN_SET);
 	}
-	else if(StepNo==4)		//步序4-DA
+	else if(StepNo==4)		
 	{
 		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7|GPIO_PIN_8, GPIO_PIN_RESET);
 		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9|GPIO_PIN_6, GPIO_PIN_SET);
 	}
 }
 
-//定时器3中断回�?函数
+
 void HAL_TIM_PeriodElapsedCallback (TIM_HandleTypeDef *htim)
 {
 	if(htim==&htim3)
 	{
-		if(rd=='C')		//正转
+		if(rd=='C')		
 		{
 			StepNo++;
 			if(StepNo>4)StepNo=1;
 			StepOut(StepNo);
 		}
-		else if(rd=='A')		//反转
+		else if(rd=='A')		
 		{
 			StepNo--;
 			if(StepNo<0)StepNo=4;
@@ -228,63 +233,63 @@ void HAL_TIM_PeriodElapsedCallback (TIM_HandleTypeDef *htim)
 	}
 }
 
-//外�?�中断回�?函数
+
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-	if(GPIO_Pin==GPIO_PIN_0)		//按键0-连续正转
+	if(GPIO_Pin==GPIO_PIN_0)		
 	{
 		rd='C';
 		HAL_TIM_Base_Start_IT(&htim3);
 		StepOut(StepNo);
 		rf=1;
 	}
-	else if(GPIO_Pin==GPIO_PIN_1)		//按键1-连续反转
+	else if(GPIO_Pin==GPIO_PIN_1)		
 	{
 		rd='A';
 		HAL_TIM_Base_Start_IT(&htim3);
 		StepOut(StepNo);
 		rf=1;
 	}
-	else if(GPIO_Pin==GPIO_PIN_2)		//按键2-�?�止
+	else if(GPIO_Pin==GPIO_PIN_2)		
 	{
 		HAL_TIM_Base_Stop(&htim3);
 	}
-	else if(GPIO_Pin==GPIO_PIN_3)		//按键3-加速
+	else if(GPIO_Pin==GPIO_PIN_3)		
 	{
 		if(arr>49)arr-=50;
 		__HAL_TIM_SET_AUTORELOAD(&htim3,arr);
 		rf=1;
 	}
-	else if(GPIO_Pin==GPIO_PIN_4)		//按键4-减速
+	else if(GPIO_Pin==GPIO_PIN_4)		
 	{
 		if(arr<999)arr+=50;
 		__HAL_TIM_SET_AUTORELOAD(&htim3,arr);
 		rf=1;
 	}
-	else if(GPIO_Pin==GPIO_PIN_5)		//按键5-点动正转
+	else if(GPIO_Pin==GPIO_PIN_5)		
 	{
-		if(HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_5)==GPIO_PIN_RESET)  //检测下降沿
+		if(HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_5)==GPIO_PIN_RESET)  
 		{
 			rd='C';
 			HAL_TIM_Base_Start_IT(&htim3);
 			StepOut(StepNo);
 			rf=1;
 		}
-		else  //检测上升沿
+		else  
 		{
 			HAL_TIM_Base_Stop(&htim3);
 		}
 	}
-	else if(GPIO_Pin==GPIO_PIN_6)		//按键6-点动正转
+	else if(GPIO_Pin==GPIO_PIN_6)		
 	{
-		if(HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_6)==GPIO_PIN_RESET)  //检测下降沿
+		if(HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_6)==GPIO_PIN_RESET) 
 		{
 			rd='A';
 			HAL_TIM_Base_Start_IT(&htim3);
 			StepOut(StepNo);
 			rf=1;
 		}
-		else  //检测上升沿
+		else  
 		{
 			HAL_TIM_Base_Stop(&htim3);
 		}
