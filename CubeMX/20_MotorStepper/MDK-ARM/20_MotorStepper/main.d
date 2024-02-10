@@ -7,9 +7,9 @@
   ..\Drivers\CMSIS\Device\ST\STM32F1xx\Include\stm32f103x6.h \
   ..\Drivers\CMSIS\Include\core_cm3.h \
   C:\Keil_v5\ARM\ARMCLANG\include\stdint.h \
-  C:\Users\haris\Desktop\STM32F103R6-master\20_MotorStepper\CubeMX\20_MotorStepper\Drivers\CMSIS\Include\cmsis_version.h \
-  C:\Users\haris\Desktop\STM32F103R6-master\20_MotorStepper\CubeMX\20_MotorStepper\Drivers\CMSIS\Include\cmsis_compiler.h \
-  C:\Users\haris\Desktop\STM32F103R6-master\20_MotorStepper\CubeMX\20_MotorStepper\Drivers\CMSIS\Include\cmsis_armclang.h \
+  C:\Users\haris\Desktop\FIT-ES\CubeMX\20_MotorStepper\Drivers\CMSIS\Include\cmsis_version.h \
+  C:\Users\haris\Desktop\FIT-ES\CubeMX\20_MotorStepper\Drivers\CMSIS\Include\cmsis_compiler.h \
+  C:\Users\haris\Desktop\FIT-ES\CubeMX\20_MotorStepper\Drivers\CMSIS\Include\cmsis_armclang.h \
   C:\Keil_v5\ARM\ARMCLANG\include\arm_compat.h \
   C:\Keil_v5\ARM\ARMCLANG\include\arm_acle.h \
   ..\Drivers\CMSIS\Device\ST\STM32F1xx\Include\system_stm32f1xx.h \
@@ -29,4 +29,5 @@
   ..\Drivers\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal_tim_ex.h \
   ..\Drivers\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal_uart.h \
   ..\Core\Inc\tim.h ..\Core\Inc\usart.h ..\Core\Inc\gpio.h \
-  C:\Keil_v5\ARM\ARMCLANG\include\stdio.h
+  C:\Keil_v5\ARM\ARMCLANG\include\stdio.h \
+  C:\Keil_v5\ARM\ARMCLANG\include\string.h

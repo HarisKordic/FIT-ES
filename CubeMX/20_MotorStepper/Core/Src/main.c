@@ -21,7 +21,8 @@
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
-
+#include <stdio.h>
+#include <string.h>
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "stdio.h"		//引入标准输入输出头文件
@@ -29,7 +30,7 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
+#define VALID_NFC_TAG_ID "123456"
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -69,6 +70,8 @@ int main(void)
 {
   /* USER CODE BEGIN 1 */
 	char str[4];		//串口输出值�?放数组
+	char inputBuffer[20];  // Assuming NFC tag input won't exceed 20 characters
+  int bufferIndex = 0;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -95,23 +98,52 @@ int main(void)
 	__HAL_TIM_SET_AUTORELOAD(&htim3, arr);		//定时器3自动重载设定值
   /* USER CODE END 2 */
 
+	char logMessage[] = "APPLICATION STARTED!\r";
+	HAL_UART_Transmit(&huart1, (uint8_t *)logMessage, sizeof(logMessage) - 1, HAL_MAX_DELAY);
+	
   /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
-  while (1)
-  {
-		if(rf == 1)
-		{
-			HAL_UART_Transmit(&huart1, (uint8_t *)&"Time Interval[ms]", 18, 18);
-			sprintf(str, "%d", arr);
-			HAL_UART_Transmit(&huart1, (uint8_t *)str, 3, 3);
-			HAL_UART_Transmit(&huart1, (uint8_t *)&"\n\r", 2, 2);
-			rf = 0;
-		}
-    /* USER CODE END WHILE */
+ while (1)
+{
+	 // Valid NFC tag, activate the motor for 3 seconds
+    
+    char receivedChar;
+    
+    // Wait for user input from the virtual terminal
+    HAL_UART_Receive(&huart1, (uint8_t *)&receivedChar, 1, HAL_MAX_DELAY);
 
-    /* USER CODE BEGIN 3 */
-  }
-  /* USER CODE END 3 */
+    // Check if the received character is Enter key (Carriage Return)
+    if (receivedChar == '\r' || receivedChar == '\n')
+    {
+        // Null-terminate the input buffer to make it a valid C string
+        inputBuffer[bufferIndex] = '\0';
+        
+        // Check if the scanned NFC tag is valid
+        if (strcmp(inputBuffer, VALID_NFC_TAG_ID) == 0)
+        {
+            // Valid NFC tag, activate the motor for 3 seconds
+            char logMessage[] = "APPLICATION LOG ---> USER IS ATHORIZED\r";
+            HAL_UART_Transmit(&huart1, (uint8_t *)logMessage, sizeof(logMessage) - 1, HAL_MAX_DELAY);
+        }
+        else
+        {
+            char logMessage[] = "APPLICATION LOG ---> INVALID NFC TAG\r";
+            HAL_UART_Transmit(&huart1, (uint8_t *)logMessage, sizeof(logMessage) - 1, HAL_MAX_DELAY);
+        }
+
+        // Clear the input buffer and reset the buffer index for the next iteration
+        memset(inputBuffer, 0, sizeof(inputBuffer));
+        bufferIndex = 0;
+    }
+    else
+    {
+        // Append the received character to the input buffer
+        if (bufferIndex < sizeof(inputBuffer) - 1)
+        {
+            inputBuffer[bufferIndex++] = receivedChar;
+        }
+    }
+		
+	}
 }
 
 /**
