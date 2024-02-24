@@ -15,8 +15,10 @@
   *
   ******************************************************************************
   */
+	
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
+
 #include "main.h"
 #include "tim.h"
 #include "usart.h"
@@ -24,6 +26,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "stdio.h"		
@@ -40,7 +43,6 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -60,7 +62,6 @@ void StepOut(uint8_t StepNo);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
 /* USER CODE END 0 */
 
 /**
@@ -81,7 +82,6 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -95,6 +95,7 @@ int main(void)
   MX_GPIO_Init();
   MX_TIM3_Init();
   MX_USART1_UART_Init();
+	
   /* USER CODE BEGIN 2 */
 	__HAL_TIM_SET_AUTORELOAD(&htim3, arr);		
   /* USER CODE END 2 */
@@ -103,14 +104,13 @@ int main(void)
 	HAL_UART_Transmit(&huart1, (uint8_t *)logMessage, sizeof(logMessage) - 1, HAL_MAX_DELAY);
 	
   /* Infinite loop */
- while (1)
-{
-	 // Valid NFC tag
-    
+  while (1)
+	{
+		// Valid NFC tag
     char receivedChar;
     
     // Wait for user input from the virtual terminal
-    HAL_UART_Receive(&huart1, (uint8_t *)&receivedChar, 1, HAL_MAX_DELAY);
+    HAL_UART_Receive(&huart1, (uint8_t *) &receivedChar, 1, HAL_MAX_DELAY);
 
     // Check if the received character is Enter key (Carriage Return)
     if (receivedChar == '\r' || receivedChar == '\n')
@@ -121,18 +121,17 @@ int main(void)
         // Check if the scanned NFC tag is valid
         if (strcmp(inputBuffer, VALID_NFC_TAG_ID) == 0)
         {
-            // Valid NFC tag
-            char logMessage[] = "APPLICATION LOG ---> USER IS ATHORIZED\r";
-            HAL_UART_Transmit(&huart1, (uint8_t *)logMessage, sizeof(logMessage) - 1, HAL_MAX_DELAY);
+					// Valid NFC tag
+					char logMessage[] = "APPLICATION LOG ---> USER IS AUTHORIZED\r";
+					HAL_UART_Transmit(&huart1, (uint8_t *) logMessage, sizeof(logMessage) - 1, HAL_MAX_DELAY);
         }
         else
         {
-            char logMessage[] = "APPLICATION LOG ---> INVALID NFC TAG\r";
-            HAL_UART_Transmit(&huart1, (uint8_t *)logMessage, sizeof(logMessage) - 1, HAL_MAX_DELAY);
-						char logMessageExit[] = "APPLICATION LOG ---> EXITING...\r";
-            HAL_UART_Transmit(&huart1, (uint8_t *)logMessageExit, sizeof(logMessageExit) - 1, HAL_MAX_DELAY);
-						exit(EXIT_FAILURE);
-
+					char logMessage[] = "APPLICATION LOG ---> INVALID NFC TAG\r";
+					HAL_UART_Transmit(&huart1, (uint8_t *) logMessage, sizeof(logMessage) - 1, HAL_MAX_DELAY);
+					char logMessageExit[] = "APPLICATION LOG ---> EXITING...\r";
+					HAL_UART_Transmit(&huart1, (uint8_t *) logMessageExit, sizeof(logMessageExit) - 1, HAL_MAX_DELAY);
+					exit(EXIT_FAILURE);
         }
 
         // Clear the input buffer and reset the buffer index for the next iteration
@@ -141,13 +140,12 @@ int main(void)
     }
     else
     {
-        // Append the received character to the input buffer
-        if (bufferIndex < sizeof(inputBuffer) - 1)
-        {
-            inputBuffer[bufferIndex++] = receivedChar;
-        }
+			// Append the received character to the input buffer
+			if (bufferIndex < sizeof(inputBuffer) - 1)
+			{
+					inputBuffer[bufferIndex++] = receivedChar;
+      }
     }
-		
 	}
 }
 
@@ -167,15 +165,15 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
+	
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
-    Error_Handler();
+		Error_Handler();
   }
 
   /** Initializes the CPU, AHB and APB buses clocks
   */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
-                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
@@ -183,7 +181,7 @@ void SystemClock_Config(void)
 
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
   {
-    Error_Handler();
+		Error_Handler();
   }
 }
 
@@ -191,43 +189,52 @@ void SystemClock_Config(void)
 
 void StepOut(uint8_t StepNo)
 {
-	if(StepNo==1)		
+	if (StepNo == 1)		
 	{
-		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8|GPIO_PIN_9, GPIO_PIN_RESET);
-		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6|GPIO_PIN_7, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8 | GPIO_PIN_9, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6 | GPIO_PIN_7, GPIO_PIN_SET);
 	}
-	else if(StepNo==2)		
+	else if (StepNo == 2)
 	{
-		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6|GPIO_PIN_9, GPIO_PIN_RESET);
-		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7|GPIO_PIN_8, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6 | GPIO_PIN_9, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7 | GPIO_PIN_8, GPIO_PIN_SET);
 	}
-	else if(StepNo==3)		
+	else if (StepNo == 3)
 	{
-		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6|GPIO_PIN_7, GPIO_PIN_RESET);
-		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8|GPIO_PIN_9, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6 | GPIO_PIN_7, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8 | GPIO_PIN_9, GPIO_PIN_SET);
 	}
-	else if(StepNo==4)		
+	else if (StepNo == 4)		
 	{
-		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7|GPIO_PIN_8, GPIO_PIN_RESET);
-		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9|GPIO_PIN_6, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7 | GPIO_PIN_8, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9 | GPIO_PIN_6, GPIO_PIN_SET);
 	}
 }
 
-
 void HAL_TIM_PeriodElapsedCallback (TIM_HandleTypeDef *htim)
 {
-	if(htim==&htim3)
+	if (htim == &htim3)
 	{
-		if(rd=='C')		
+		if (rd == 'C')
 		{
 			StepNo++;
-			if(StepNo>4)StepNo=1;
+			
+			if (StepNo>4)
+			{
+				StepNo = 1;
+			}
+			
 			StepOut(StepNo);
 		}
-		else if(rd=='A')		
+		else if (rd == 'A')		
 		{
 			StepNo--;
-			if(StepNo<0)StepNo=4;
+			
+			if(StepNo<0)
+			{
+				StepNo=4;
+			}
+			
 			StepOut(StepNo);
 		}
 	}
@@ -236,60 +243,68 @@ void HAL_TIM_PeriodElapsedCallback (TIM_HandleTypeDef *htim)
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-	if(GPIO_Pin==GPIO_PIN_0)		
+	if (GPIO_Pin == GPIO_PIN_0)		
 	{
-		rd='C';
+		rd = 'C';
 		HAL_TIM_Base_Start_IT(&htim3);
 		StepOut(StepNo);
-		rf=1;
+		rf = 1;
 	}
-	else if(GPIO_Pin==GPIO_PIN_1)		
+	else if (GPIO_Pin == GPIO_PIN_1)		
 	{
-		rd='A';
+		rd = 'A';
 		HAL_TIM_Base_Start_IT(&htim3);
 		StepOut(StepNo);
-		rf=1;
+		rf = 1;
 	}
-	else if(GPIO_Pin==GPIO_PIN_2)		
+	else if (GPIO_Pin == GPIO_PIN_2)		
 	{
 		HAL_TIM_Base_Stop(&htim3);
 	}
-	else if(GPIO_Pin==GPIO_PIN_3)		
+	else if (GPIO_Pin == GPIO_PIN_3)		
 	{
-		if(arr>49)arr-=50;
-		__HAL_TIM_SET_AUTORELOAD(&htim3,arr);
-		rf=1;
-	}
-	else if(GPIO_Pin==GPIO_PIN_4)		
-	{
-		if(arr<999)arr+=50;
-		__HAL_TIM_SET_AUTORELOAD(&htim3,arr);
-		rf=1;
-	}
-	else if(GPIO_Pin==GPIO_PIN_5)		
-	{
-		if(HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_5)==GPIO_PIN_RESET)  
+		if (arr > 49)
 		{
-			rd='C';
+			arr -= 50;
+		}
+		
+		__HAL_TIM_SET_AUTORELOAD(&htim3,arr);
+		rf = 1;
+	}
+	else if (GPIO_Pin == GPIO_PIN_4)		
+	{
+		if (arr < 999)
+		{
+			arr += 50;
+		}
+		
+		__HAL_TIM_SET_AUTORELOAD(&htim3,arr);
+		rf = 1;
+	}
+	else if (GPIO_Pin == GPIO_PIN_5)		
+	{
+		if (HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_5) == GPIO_PIN_RESET)  
+		{
+			rd = 'C';
 			HAL_TIM_Base_Start_IT(&htim3);
 			StepOut(StepNo);
-			rf=1;
+			rf = 1;
 		}
 		else  
 		{
 			HAL_TIM_Base_Stop(&htim3);
 		}
 	}
-	else if(GPIO_Pin==GPIO_PIN_6)		
+	else if (GPIO_Pin == GPIO_PIN_6)		
 	{
-		if(HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_6)==GPIO_PIN_RESET) 
+		if (HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_6) == GPIO_PIN_RESET) 
 		{
-			rd='A';
+			rd = 'A';
 			HAL_TIM_Base_Start_IT(&htim3);
 			StepOut(StepNo);
-			rf=1;
+			rf = 1;
 		}
-		else  
+		else
 		{
 			HAL_TIM_Base_Stop(&htim3);
 		}
